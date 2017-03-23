@@ -1,54 +1,41 @@
 require('dotenv').load()
 const Koa = require('koa')
-const Router = require('koa-router')
-const http = require('http')
 const request = require('koa-request')
 const app = new Koa()
-const router = new Router()
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY
-// app.proxy = true
 
-app.use(function *(ctx, next) {
+app.use(function *(next) {
+  // const ip = this.request.ip // this should be grabbing the ip address
+  const ip = '208.80.152.201' // dummy ip data
 
   const geoURL = {
-    url: 'http://ip-api.com/json/208.80.152.201',
+    url: `http://ip-api.com/json/${ip}`,
   }
 
-
   const geolocation = yield request(geoURL)
-  // console.log(geolocation)
   const location = JSON.parse(geolocation.body)
 
   this.lat = location.lat
   this.lon = location.lon
-  this.body = `hello ${this.lat}`
-
-  // const info = JSON.parse(res.body)
 
   // api call to the weather api and will save to the request
-
   const weatherURL = {
     url: `http://api.openweathermap.org/data/2.5/weather?lat=${this.lat}&lon=${this.lon}&APPID=${WEATHER_API_KEY}`
   }
-
   const weatherRes = yield request(weatherURL)
-  const weatherInfo = JSON.parse(weatherRes.body)
+  const weather = JSON.parse(weatherRes.body)
 
-  console.log(weatherInfo)
+  this.name = weather.name
+  this.temp = weather.main.temp
+  this.tempMin = weather.main.temp_min
+  this.tempMax = weather.main.temp_max
+  this.humidity = weather.main.humidity
+  this.weatherCode = weather.cod
 
-  this.name = weatherInfo.name
-  this.temp = weatherInfo.main.temp
-  this.tempMin = weatherInfo.main.temp_min
-  this.tempMax = weatherInfo.main.temp_max
-  this.humidity = weatherInfo.main.humidity
-  this.weatherCode = weatherInfo.cod
+  yield next
 })
 
-
 app.listen(3000, '0.0.0.0');
-
-
-    // weatherURL: `http://api.openweathermap.org/data/2.5/weather?lat=${info.lat}&lon=${info.lon}&APPID=${WEATHER_API_KEY}`
 
 // The middleware should do this
 // ● get the IP address of the request
