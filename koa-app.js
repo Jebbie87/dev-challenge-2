@@ -8,46 +8,47 @@ const router = new Router()
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY
 // app.proxy = true
 
-app.use(async (ctx, next) => {
+app.use(function *(ctx, next) {
 
-  // const res = await request(options)
-  console.log(ctx.response.body)
+  const geoURL = {
+    url: 'http://ip-api.com/json/208.80.152.201',
+  }
+
+
+  const geolocation = yield request(geoURL)
+  // console.log(geolocation)
+  const location = JSON.parse(geolocation.body)
+
+  this.lat = location.lat
+  this.lon = location.lon
+  this.body = `hello ${this.lat}`
 
   // const info = JSON.parse(res.body)
 
   // api call to the weather api and will save to the request
-  // const weatherLocation = {
-  //   url: `http://api.openweathermap.org/data/2.5/weather?lat=${info.lat}&lon=${info.lon}&APPID=${WEATHER_API_KEY}`
-  // }
 
-  // const weatherRes = await request(weatherLocation)
-  // const weatherInfo = JSON.parse(weatherRes.body)
-
-  // ctx.name = weatherInfo.name
-  // ctx.temp = weatherInfo.main.temp
-  // ctx.tempMin = weatherInfo.main.temp_min
-  // ctx.tempMax = weatherInfo.main.temp_max
-  // ctx.humidity = weatherInfo.main.humidity
-  // ctx.weatherCode = weatherInfo.cod
-
-  await next()
-})
-
-function *grabGeolocation(ctx) {
-  console.log(ctx)
-
-  // api call to the geolocation api and will save the lat and lon to the request
-  const options = {
-    url: 'http://ip-api.com/json/208.80.152.201'
+  const weatherURL = {
+    url: `http://api.openweathermap.org/data/2.5/weather?lat=${this.lat}&lon=${this.lon}&APPID=${WEATHER_API_KEY}`
   }
 
-  const location = yield request(this)
-  console.log(location.body)
-}
+  const weatherRes = yield request(weatherURL)
+  const weatherInfo = JSON.parse(weatherRes.body)
+
+  console.log(weatherInfo)
+
+  this.name = weatherInfo.name
+  this.temp = weatherInfo.main.temp
+  this.tempMin = weatherInfo.main.temp_min
+  this.tempMax = weatherInfo.main.temp_max
+  this.humidity = weatherInfo.main.humidity
+  this.weatherCode = weatherInfo.cod
+})
+
 
 app.listen(3000, '0.0.0.0');
 
 
+    // weatherURL: `http://api.openweathermap.org/data/2.5/weather?lat=${info.lat}&lon=${info.lon}&APPID=${WEATHER_API_KEY}`
 
 // The middleware should do this
 // ● get the IP address of the request
