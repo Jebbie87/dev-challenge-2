@@ -50,23 +50,3 @@ app.use(function *(next) {
 })
 
 app.listen(3000, '0.0.0.0');
-
-// The middleware should do this
-/************   NOT DONE  ************/
-
-/************     DONE    ************/
-// ● get the IP address of the request
-
-// ● call an external API to geo­locate that IP address using a free service (like
-// http://ip­api.com/ )
-
-// ● store the geo­location data in the request (ex. this.lat = /* latitude */; this.lon = /*
-// longitude */)
-
-// ● call an external API to get weather data for that geo­location (like
-// http://openweathermap.org/api)
-
-// ● store the weather data in the request (ex. this.temp = /* temperature */; this.weatherCode = /* weather code */;)
-
-// ● call the next middleware.
-// Zip up the entire project and send it to us with some quick instructions to get it running.
