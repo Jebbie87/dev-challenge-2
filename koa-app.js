@@ -46,7 +46,7 @@ app.use(function *(next) {
   City longitude = ${this.lon}
   City latitude = ${this.lat}
   `
-  yield next
+  return yield next
 })
 
 app.listen(3000, '0.0.0.0');
